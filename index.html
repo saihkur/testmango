@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Login</title>
+  <style>
+    body {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      background: #f0f0f0;
+      font-family: Arial, sans-serif;
+    }
+    .login-box {
+      background: white;
+      padding: 30px;
+      border-radius: 8px;
+      text-align: center;
+      box-shadow: 0 0 12px rgba(0, 0, 0, 0.15);
+    }
+    input {
+      padding: 10px;
+      font-size: 16px;
+      width: 200px;
+    }
+    button {
+      padding: 10px 20px;
+      font-size: 16px;
+      margin-top: 10px;
+    }
+    .hidden {
+      display: none;
+    }
+  </style>
+</head>
+<body>
+  <div class="login-box">
+    <h2>Enter 8-digit Passcode</h2>
+    <input id="passcode" type="password" maxlength="8" placeholder="********" />
+    <br />
+    <button onclick="checkCode()">Login</button>
+    <p id="message"></p>
+    <img id="welcome-img" class="hidden" src="welcome.jpg" alt="Welcome" />
+  </div>
+
+  <script>
+    const correctCode = "12345678";
+    const maxAttempts = 10;
+    const lockoutTime = 5 * 60 * 1000; // 5 minutes in milliseconds
+    let attempts = 0;
+    let lockedUntil = null;
+
+    function checkCode() {
+      const now = Date.now();
+      const code = document.getElementById("passcode").value;
+      const msg = document.getElementById("message");
+      const img = document.getElementById("welcome-img");
+
+      if (lockedUntil && now < lockedUntil) {
+        const remaining = Math.ceil((lockedUntil - now) / 1000);
+        msg.textContent = `Too many attempts. Try again in ${remaining} seconds.`;
+        return;
+      }
+
+      if (code === correctCode) {
+        msg.textContent = "Access Granted";
+        img.classList.remove("hidden");
+      } else {
+        attempts++;
+        if (attempts >= maxAttempts) {
+          lockedUntil = now + lockoutTime;
+          msg.textContent = "Too many failed attempts. Locked for 5 minutes.";
+          attempts = 0;
+        } else {
+          const left = maxAttempts - attempts;
+          msg.textContent = `Wrong passcode. ${left} tries remaining.`;
+        }
+      }
+    }
+  </script>
+</body>
+</html>
